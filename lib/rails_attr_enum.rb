@@ -1,5 +1,12 @@
 module RailsAttrEnum
 
+  autoload :Attr,            'rails_attr_enum/attr.rb'
+  autoload :Entry,           'rails_attr_enum/entry.rb'
+  autoload :EntryValue,      'rails_attr_enum/entry_value.rb'
+  autoload :Enum,            'rails_attr_enum/enum.rb'
+  autoload :EnumAccumulator, 'rails_attr_enum/enum_accumulator.rb'
+  autoload :Version,         'rails_attr_enum/version.rb'
+
   def attr_enum(attr_name, *keys, &block)
     if block_given?
       add_attr_enum_through_block(attr_name, &block)
