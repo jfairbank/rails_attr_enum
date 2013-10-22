@@ -27,11 +27,11 @@ module RailsAttrEnum
       end
     end
 
-    private
-
     def value
       model.read_attribute(attr_name)
     end
+
+    private
 
     def value=(v)
       model.send(:write_attribute, attr_name, v)
