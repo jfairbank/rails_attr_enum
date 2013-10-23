@@ -27,6 +27,10 @@ module RailsAttrEnum
       end
     end
 
+    def key
+      enum.get_key(value)
+    end
+
     def value
       model.read_attribute(attr_name)
     end
