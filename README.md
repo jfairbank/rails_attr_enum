@@ -1,8 +1,8 @@
 # RailsAttrEnum
-## Create enum values for a Rails model's int attribute
+## Enums for Rails models
 
-I created RailsAttrEnum as way to create an enum-like structure similar to enums
-in C languages. You can specify the accepted identifiers for the possible
+I created RailsAttrEnum as a way to create an enum-like structure similar to
+enums in C languages. You can specify the accepted identifiers for the possible
 integer values for the model's attribute as well have built-in validation to
 ensure only the values are accepted.
 
@@ -13,6 +13,8 @@ Here's an example given a class `User` with an attribute `role`:
 ```
 # Example model User for a blog app
 class User
+  extend RailsAttrEnum
+
   attr_enum :role, :admin, :author, :editor, :user
 end
 
@@ -33,6 +35,8 @@ value.
 ```
 # Target specific identifiers
 class User
+  extend RailsAttrEnum
+
   attr_enum :role, :admin, { author: 12 }, :editor, { user: 42 }
 end
 
@@ -43,6 +47,8 @@ User::Role::USER   == 42
 
 # Use a hash to specify all values
 class User
+  extend RailsAttrEnum
+
   attr_enum :role, {
     admin: 1,
     author: 2,
@@ -58,6 +64,8 @@ User::Role::USER   == 8
 
 # Use a block to specify some (or all)
 class User
+  extend RailsAttrEnum
+
   attr_enum :role do
     add admin: 42
     add :author
@@ -72,7 +80,7 @@ User::Role::EDITOR == 1
 User::Role::USER   == 7
 ```
 
-### Titles
+### Labels
 RailsAttrEnum also creates a label for each identifier that you can use in your
 app to display something meaningful for a value. Appropriate label constants are
 added to the module enum as well as a helper `display_*` method on instances of
@@ -80,6 +88,8 @@ your model.
 
 ```
 class User
+  extend RailsAttrEnum
+
   attr_enum :role, :admin, :author, :editor, :user
 end
 
@@ -97,6 +107,21 @@ You can specify your own labels if you like. By default, RailAttrEnum calls
 
 ```
 class User
+  extend RailsAttrEnum
+
+  attr_enum :role, { admin: 'Admin Role' }, :author,
+                   { editor: 'Editor Role' }, :user
+end
+
+User::Role::ADMIN_LABEL  == 'Admin Role'
+User::Role::AUTHOR_LABEL == 'Author'
+User::Role::EDITOR_LABEL == 'Editor Role'
+User::Role::USER_LABEL   == 'User'
+
+# With a hash
+class User
+  extend RailsAttrEnum
+
   attr_enum :role, {
     admin: 'Admin Role',
     author: 'Author Role',
@@ -109,4 +134,21 @@ User::Role::ADMIN_LABEL  == 'Admin Role'
 User::Role::AUTHOR_LABEL == 'Author Role'
 User::Role::EDITOR_LABEL == 'Editor Role'
 User::Role::USER_LABEL   == 'User Role'
+
+# With a block
+class User
+  extend RailsAttrEnum
+
+  attr_enum :role do
+    add :admin
+    add author: 'Author Role'
+    add editor: 'Editor Role'
+    add :user
+  end
+end
+
+User::Role::ADMIN_LABEL  == 'Admin'
+User::Role::AUTHOR_LABEL == 'Author Role'
+User::Role::EDITOR_LABEL == 'Editor Role'
+User::Role::USER_LABEL   == 'User'
 ```
