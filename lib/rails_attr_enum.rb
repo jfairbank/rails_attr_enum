@@ -11,7 +11,7 @@ module RailsAttrEnum
     if block_given?
       add_attr_enum_through_block(attr_name, &block)
     else
-      if keys.first.is_a?(Hash)
+      if keys.first.is_a?(Hash) && keys.first.size > 1
         add_attr_enum_through_block(attr_name) do
           keys.first.each { |k, v| add k => v }
         end
