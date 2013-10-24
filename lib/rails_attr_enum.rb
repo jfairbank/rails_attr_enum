@@ -33,11 +33,11 @@ module RailsAttrEnum
     @_attr_enums ||= {}
 
     unless column_names.include?(attr.name)
-      raise "Invalid attribute name #{attr_name_s}"
+      raise "Invalid attribute name #{attr.name}"
     end
 
     if @_attr_enums.any? { |(_, enm)| enm.attr_name == attr.name }
-      raise "Already defined enum for '#{attr_name_s}'"
+      raise "Already defined enum for '#{attr.name}'"
     end
 
     @_attr_enums[attr.name.to_sym] = Module.new { include Enum }.tap do |mod|
