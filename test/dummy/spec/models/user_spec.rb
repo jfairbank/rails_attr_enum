@@ -53,16 +53,6 @@ describe User do
   let(:u_editor) { User.new(role: User::Role::EDITOR) }
   let(:u_user)   { User.new(role: User::Role::USER) }
 
-  def clear_user
-    if User.const_defined?(:Role)
-      User.send(:remove_const, :Role)
-    end
-
-    if User.instance_variable_defined?(:@_attr_enums)
-      User.remove_instance_variable(:@_attr_enums)
-    end
-  end
-
   context 'when passing all symbols' do
     before :each do
       clear_user

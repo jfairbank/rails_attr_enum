@@ -40,3 +40,13 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = "random"
 end
+
+def clear_user
+  if User.const_defined?(:Role)
+    User.send(:remove_const, :Role)
+  end
+
+  if User.instance_variable_defined?(:@_attr_enums)
+    User.remove_instance_variable(:@_attr_enums)
+  end
+end
