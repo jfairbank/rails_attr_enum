@@ -11,10 +11,11 @@ Gem::Specification.new do |s|
   s.email       = ['elpapapollo@gmail.com']
   s.homepage    = 'https://github.com/jfairbank/rails_attr_enum'
   s.summary     = 'Create enum values for a Rails model\'s attribute'
-  s.description = 'Create enum values for a Rails model\'s attribute'
+  s.description = 'Create enums for Rails model attributes like enums in C languages'
+  s.license     = 'MIT'
 
-  s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', "README.rdoc"]
-  s.test_files = Dir["test/**/*"]
+  s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
+  s.test_files = Dir['test/**/*']
 
   s.add_dependency 'rails', '>= 3.2.0'
 
