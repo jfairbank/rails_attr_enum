@@ -32,7 +32,7 @@ module RailsAttrEnum
 
     @_attr_enums ||= {}
 
-    unless column_names.include?(attr.name)
+    if table_exists? && !column_names.include?(attr.name)
       raise "Invalid attribute name #{attr.name}"
     end
 
