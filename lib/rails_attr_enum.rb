@@ -42,11 +42,16 @@ module RailsAttrEnum
 
     @_attr_enums[attr.name.to_sym] = Module.new { include Enum }.tap do |mod|
       mod.init_enum(attr.name)
-      entries.each(&mod.method(:add))
       const_set(attr.enum_name, mod)
-      class_eval do
-        validates(attr.name.to_sym, validation_rules.merge(inclusion: { in: mod.values }))
+
+      entries.each do |entry|
+        mod.add(entry)
+        class_eval <<-EOS
+          scope :#{attr.name}_#{entry.key}, -> { where(:#{attr.name} => #{entry.value}) }
+        EOS
       end
+
+      validates(attr.name.to_sym, validation_rules.merge(inclusion: { in: mod.values }))
     end
 
     add_methods(attr)
