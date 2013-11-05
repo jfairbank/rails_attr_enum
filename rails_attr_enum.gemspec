@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.description = 'Create enums for Rails model attributes like enums in C languages'
   s.license     = 'MIT'
 
-  s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
+  s.files = Dir['{app,config,db,lib}/**/*', 'CHANGELOG.md', 'LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['test/**/*']
 
   s.add_dependency 'rails', '>= 3.2.0'
