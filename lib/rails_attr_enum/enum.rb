@@ -38,6 +38,50 @@ module RailsAttrEnum
       def values; mapped(:value) end
       def labels; mapped(:label) end
 
+      def to_h(options = {})
+        default_to_include = [:key, :value, :label]
+
+        [:only, :except].each do |key|
+          if options.include?(key)
+            if options[key].is_a?(Symbol)
+              options[key] = [options[key]]
+            elsif options[key].empty?
+              options[key] = nil
+            end
+
+            unless options[key].nil? || (options[key] - default_to_include).empty?
+              raise 'Unknown keys for enum'
+            end
+          end
+        end
+
+        to_include =
+          if !options[:only].nil?
+            default_to_include & options[:only]
+          elsif !options[:except].nil?
+            default_to_include - options[:except]
+          else
+            default_to_include
+          end
+
+        builder =
+          if to_include.size == 1
+            to_include = to_include.first
+            proc { |entry| [entry.const_name, entry.send(to_include)]}
+          else
+            proc do |entry|
+              value = Hash[entry.to_h.select { |(key, _)| to_include.include?(key) }]
+              [entry.const_name, value]
+            end
+          end
+
+        Hash[@entries.map(&builder)]
+      end
+
+      def to_json(options = {})
+        to_h(options).to_json
+      end
+
       private
 
       def get_from_entries(key, value)
