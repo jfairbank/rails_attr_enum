@@ -31,7 +31,9 @@ module RailsAttrEnum
         label = key.to_s.titleize
       end
 
-      add_entry(key, value, label)
+      const_name = key.to_s.upcase
+
+      add_entry(const_name, key, value, label)
     end
 
     def validates(rules = {})
@@ -40,8 +42,8 @@ module RailsAttrEnum
 
     private
 
-    def add_entry(key, value, label)
-      Entry.new(key, value, label).tap do |entry|
+    def add_entry(const_name, key, value, label)
+      Entry.new(const_name, key, value, label).tap do |entry|
         revalue_entries!(value)
         @entries << entry
         @values << value
