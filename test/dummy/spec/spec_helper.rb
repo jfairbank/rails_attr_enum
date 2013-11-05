@@ -42,6 +42,20 @@ RSpec.configure do |config|
 
   # FactoryGirl configuration
   config.include FactoryGirl::Syntax::Methods
+
+  # DatabaseCleaner configuration
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
 end
 
 def clear_user
