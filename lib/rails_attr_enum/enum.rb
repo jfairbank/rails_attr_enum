@@ -1,3 +1,5 @@
+require 'json'
+
 module RailsAttrEnum
 
   ## Enum representation
