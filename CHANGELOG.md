@@ -1,3 +1,15 @@
+### v0.1.0
+* Added Rails scope helpers for searching on enum values. For a given
+  model `User` with an enum attribute of `role` with keys `admin`,
+  `editor`, `author`, and `user`, the following scopes will be added:
+  * `User.role_admin`
+  * `User.role_editor`
+  * `User.role_author`
+  * `User.role_user`
+* Added `to_h` and `to_json` methods to an `Enum` like `User::Role` to
+  give the hash and json string representations of the enum,
+  respectively.
+
 ### v0.0.6
 * Added example usage of extending `RailsAttrEnum` and calling
   `attr_enum` in `User` model in test Rails app.
