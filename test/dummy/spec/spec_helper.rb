@@ -47,6 +47,15 @@ def clear_user
   end
 
   if User.instance_variable_defined?(:@_attr_enums)
-    User.remove_instance_variable(:@_attr_enums)
+    User.send(:remove_instance_variable, :@_attr_enums)
+  end
+end
+
+def default_user_roles
+  clear_user
+
+  User.class_eval do
+    extend RailsAttrEnum
+    attr_enum :role, :admin, :editor, :author, :user
   end
 end
