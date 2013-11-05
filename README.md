@@ -14,155 +14,157 @@ Here's an example given a class `User` with an attribute `role`:
     class User < ActiveRecord::Base
       extend RailsAttrEnum
 
-      attr_enum :role, :admin, :author, :editor, :user
+      attr_enum :role, :admin, :editor, :author, :user
     end
 
     # Creates module `User::Role` with constants for each possible value
     User::Role::ADMIN  == 0
-    User::Role::AUTHOR == 1
-    User::Role::EDITOR == 2
+    User::Role::EDITOR == 1
+    User::Role::AUTHOR == 2
     User::Role::USER   == 3
 
-As you can see, this would give a module `User::Role` containing constants `ADMIN`, `AUTHOR`,
-`EDITOR`, and `USER` with the respective values of `0`, `1`, `2`, and `3`.
+[View other ways to define and customize enums](https://github.com/jfairbank/rails_attr_enum/wiki/Adding-an-Enum-to-a-Model)
 
-You can also specify the integer values for each identifier or only some. Those
-you don't specify will automatically be filled with the first available integer
-value.
+### Helpers for Model Instances
 
-    # Target specific identifiers
-    class User < ActiveRecord::Base
-      extend RailsAttrEnum
+A couple helpers methods are added to the model and the enum attribute.
 
-      attr_enum :role, :admin, { author: 12 }, :editor, { user: 42 }
-    end
+Get the "display" label for the current value with the `display_*` method:
 
-    User::Role::ADMIN  == 0
-    User::Role::AUTHOR == 12
-    User::Role::EDITOR == 1   # Notice this still defaulted to 1
-    User::Role::USER   == 42
+    user = User.new(User::Role::ADMIN)
+    user.display_role == 'Admin'
 
-    # Use a hash to specify all values
-    class User < ActiveRecord::Base
-      extend RailsAttrEnum
+You can check for a specific value with a query `*?` method:
 
-      attr_enum :role, {
-        admin: 1,
-        author: 2,
-        editor: 4,
-        user: 8
-      }
-    end
+    user = User.new(User::Role::AUTHOR)
+    user.role.admin?  # false
+    user.role.editor? # false
+    user.role.author? # true
+    user.role.user?   # false
 
-    User::Role::ADMIN  == 1
-    User::Role::AUTHOR == 2
-    User::Role::EDITOR == 4
-    User::Role::USER   == 8
+The query method works via a forwarding class, so the normal `role` and `role=`
+methods should work as expected.
 
-    # Use a block to specify some (or all)
-    class User < ActiveRecord::Base
-      extend RailsAttrEnum
+**NOTE**: one caveat to this is if you try to use
+a hash map of the enum values to some other value. See below:
 
-      attr_enum :role do
-        add admin: 42
-        add :author
-        add :editor
-        add user: 7
-      end
-    end
+    alt_label_map = {
+      User::Role::ADMIN  => 'The admin user',
+      User::Role::EDITOR => 'An editor',
+      User::Role::AUTHOR => 'An author',
+      User::Role::USER   => 'A user'
+    }
 
-    User::Role::ADMIN  == 42
-    User::Role::AUTHOR == 0  # Again notice how `AUTHOR` and `EDITOR` defaulted
-    User::Role::EDITOR == 1
-    User::Role::USER   == 7
+    user = User.new(User::Role::EDITOR)
+    alt_label = alt_label_map[user.role]
+    alt_label == nil # not 'An editor'
 
-### Labels
-RailsAttrEnum also creates a label for each identifier that you can use in your
-app to display something meaningful for a value. Appropriate label constants are
-added to the module enum as well as a helper `display_*` method on instances of
-your model.
+If you want the hash to work as expected than call the `.value` method on the
+attribute:
 
-    class User < ActiveRecord::Base
-      extend RailsAttrEnum
+    alt_label = alt_label_map[user.role.value]
+    alt_label == 'An editor'
 
-      attr_enum :role, :admin, :author, :editor, :user
-    end
+Thus, the `.value` method on the attribute gives the actual `Fixnum` value.
+There is also a `.key` method which gives the symbol key:
 
-    User::Role::ADMIN_LABEL  == 'Admin'
-    User::Role::AUTHOR_LABEL == 'Author'
-    User::Role::EDITOR_LABEL == 'Editor'
-    User::Role::USER_LABEL   == 'User'
+    user = User.new(User::Role::ADMIN)
+    user.role.key == :admin
 
-    user = User.new(role: User::Role::ADMIN)
-    user.display_role == 'Admin' # Helper method added by RailsAttrEnum
+The attribute value can also be set with a bang `*!` method
 
-You can specify your own labels if you like. By default, RailAttrEnum calls
-`.to_s.titleize` on the symbol identifier.
+    user = User.new
+    user.role.user!
+    user.display_role == 'User'
 
-    class User < ActiveRecord::Base
-      extend RailsAttrEnum
+    user.role.author!
+    user.display_role == 'Author'
 
-      attr_enum :role,
-        { admin: 'Admin Role' }, :author, { editor: 'Editor Role' }, :user
-    end
+### Scopes for Models
 
-    User::Role::ADMIN_LABEL  == 'Admin Role'
-    User::Role::AUTHOR_LABEL == 'Author'
-    User::Role::EDITOR_LABEL == 'Editor Role'
-    User::Role::USER_LABEL   == 'User'
+Convenient scopes are created for each possible enum value on the model class:
 
-    # With a hash
-    class User < ActiveRecord::Base
-      extend RailsAttrEnum
+    User.scope_admin  == User.where(role: User::Role::ADMIN)
+    User.scope_editor == User.where(role: User::Role::EDITOR)
+    User.scope_author == User.where(role: User::Role::AUTHOR)
+    User.scope_user   == User.where(role: User::Role::USER)
 
-      attr_enum :role, {
-        admin: 'Admin Role',
-        author: 'Author Role',
-        editor: 'Editor Role',
-        user: 'User Role'
-      }
-    end
+### Enum Helper Methods
 
-    User::Role::ADMIN_LABEL  == 'Admin Role'
-    User::Role::AUTHOR_LABEL == 'Author Role'
-    User::Role::EDITOR_LABEL == 'Editor Role'
-    User::Role::USER_LABEL   == 'User Role'
+Helper methods are added to the actual `Enum` module as well.
 
-    # With a block
-    class User < ActiveRecord::Base
-      extend RailsAttrEnum
+`get_label` and `get_key` get the (surprise!) label and key for a given enum
+value:
 
-      attr_enum :role do
-        add :admin
-        add author: 'Author Role'
-        add editor: 'Editor Role'
-        add :user
-      end
-    end
+    User::Role.get_label(User::Role::ADMIN) == 'Admin'
+    User::Role.get_key(User::Role::USER) == :user
 
-    User::Role::ADMIN_LABEL  == 'Admin'
-    User::Role::AUTHOR_LABEL == 'Author Role'
-    User::Role::EDITOR_LABEL == 'Editor Role'
-    User::Role::USER_LABEL   == 'User'
+---
 
-### Mix-and-match
-If you need to be very specific about values and labels, then you can specify
-both at the same time too.
+`attr_name` returns the attribute symbol
 
-    class User < ActiveRecord::Base
-      extend RailsAttrEnum
+    User::Role.attr_name == :role
 
-      attr_enum :role, { admin: { label: 'Admin Role', value: 1 } },
-                       { author: 'Author Role' },
-                       { editor: 42 },
-                       :user
-    end
+---
 
-    User::Role::ADMIN        == 1
-    User::Role::ADMIN_LABEL  == 'Admin Role'
-    User::Role::AUTHOR       == 0
-    User::Role::AUTHOR_LABEL == 'Author Role'
-    User::Role::EDITOR       == 42
-    User::Role::EDITOR_LABEL == 'Editor'
-    User::Role::USER         == 2
-    User::Role::USER_LABEL   == 'User'
+`keys` returns all the enum keys
+
+    User::Role.keys == [:admin, :editor, :author, :user]
+
+---
+
+`values` returns all the enum values
+
+    User::Role.values == [0, 1, 2, 3]
+
+---
+
+`labels` returns all the enum labels
+
+    User::Role.labels == ['Admin', 'Editor', 'Author', 'User']
+
+---
+
+`label_value_pairs` returns an array of pairs of the label and value for each
+enum value. This is mainly a convenience method for something like the
+collection option for a select input in the
+[Formtastic](https://github.com/justinfrench/formtastic) or
+[ActiveAdmin (which uses Formtastic)](https://github.com/gregbell/active_admin)
+gems:
+
+    User::Role.label_value_pairs ==
+      [['Admin', 0], ['Editor', 1], ['Author', 2], ['User', 3]]
+
+---
+
+`to_h` and `to_json` return a hash and a json string representation of the enum,
+respectively. They both offer an `only` and an `except` option to specify if
+you only want the value or maybe only the label and key or if you want
+everything but key. **NOTE**:  passing only key to `only` or excluding all but
+one key via `except` will give that single value (whether it's value, key, or
+label) instead of a hash. See below to understand:
+
+    # Default call with no options
+    User::Role.to_h == {
+      'ADMIN'  => { key: :admin,  label: 'Admin',  value: 0 },
+      'EDITOR' => { key: :editor, label: 'Editor', value: 1 },
+      'AUTHOR' => { key: :author, label: 'Author', value: 2 },
+      'USER'   => { key: :user,   label: 'User',   value: 3 }
+    }
+
+    # Call with a single symbol (would also work with `only: [:value]`)
+    # Notice the mapped values are not hashes like above because we only
+    # specified that we wanted the value
+    User::Role.to_h(only: :value) == {
+      'ADMIN'  => 0,
+      'EDITOR' => 1,
+      'AUTHOR' => 2,
+      'USER'   => 3
+    }
+
+    # Would also work with `except: [:value]`
+    User::Role.to_json(except: :value) ==
+      "{\"ADMIN\":{\"key\":\"admin\",\"label\":\"Admin\"},\"EDITOR\":{\"key\":\"editor\",\"label\":\"Editor\"},\"AUTHOR\":{\"key\":\"author\",\"label\":\"Author\"},\"USER\":{\"key\":\"user\",\"label\":\"User\"}}"
+
+### Feedback and Pull Requests Welcome
+This is my first real Rails gem, so I welcome all feedback and ideas. I hope this gem is as helpful to you as it has been to me in my own projects.
