@@ -66,7 +66,7 @@ alt_label = alt_label_map[user.role]
 alt_label == nil # not 'An editor'
 ```
 
-If you want the hash to work as expected than call the `.value` method on the
+If you want the hash to work as expected then call the `.value` method on the
 attribute:
 
 ```ruby
