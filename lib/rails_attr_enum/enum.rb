@@ -23,8 +23,15 @@ module RailsAttrEnum
         @entries << entry
       end
 
-      def label_value_pairs
-        labels.zip values
+      def label_value_pairs(*keys)
+        if keys.empty?
+          labels.zip(values)
+        else
+          @entries.reduce([]) do |arr, entry|
+            arr << [entry.label, entry.value] if keys.include?(entry.key)
+            arr
+          end
+        end
       end
 
       def get_label(value)
