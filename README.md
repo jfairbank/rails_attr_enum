@@ -1,12 +1,24 @@
 # RailsAttrEnum
-## Enums for Rails models
 
-I created RailsAttrEnum as a way to create an enum-like structure similar to
-enums in C languages. You can specify the accepted identifiers for the possible
-integer values for the model's attribute as well have built-in validation to
-ensure only the values are accepted.
+Enums for Rails attributes. Specify enumeration identifiers for int attributes
+on your Rails models. Includes constants for your identifiers, validation,
+model class scopes, and instance helper methods.
 
-### Usage
+## Build Status
+[![Build Status](https://travis-ci.org/jfairbank/rails_attr_enum.png?branch=master)](https://travis-ci.org/jfairbank/rails_attr_enum)
+
+## Installation
+Add to your Gemfile:
+
+```ruby
+gem 'rails_attr_enum'
+```
+
+And then run bundler:
+
+    $ bundle install
+
+## Usage
 
 Here's an example given a class `User` with an attribute `role`:
 
@@ -26,7 +38,7 @@ User::Role::USER   == 3
 
 [View other ways to define and customize enums](https://github.com/jfairbank/rails_attr_enum/wiki/Adding-an-Enum-to-a-Model)
 
-### Helpers for Model Instances
+## Helpers for Model Instances
 
 A couple helpers methods are added to the model and the enum attribute.
 
@@ -93,7 +105,7 @@ user.role.author!
 user.display_role == 'Author'
 ```
 
-### Scopes for Models
+## Scopes for Models
 
 Convenient scopes are created for each possible enum value on the model class:
 
@@ -104,11 +116,12 @@ User.scope_author == User.where(role: User::Role::AUTHOR)
 User.scope_user   == User.where(role: User::Role::USER)
 ```
 
-### Enum Helper Methods
+## Enum Helper Methods
 
 Helper methods are added to the actual `Enum` module as well.
 
-`get_label` and `get_key` get the (surprise!) label and key for a given enum
+### get_label and get_key
+Get the (surprise!) label and key for a given enum
 value:
 
 ```ruby
@@ -116,53 +129,63 @@ User::Role.get_label(User::Role::ADMIN) == 'Admin'
 User::Role.get_key(User::Role::USER) == :user
 ```
 
----
-
-`attr_name` returns the attribute symbol
+### attr_name
+Return the attribute name as a symbol
 
 ```ruby
 User::Role.attr_name == :role
 ```
 
----
-
-`keys` returns all the enum keys
+### keys
+Return all the enum keys
 
 ```ruby
 User::Role.keys == [:admin, :editor, :author, :user]
 ```
 
----
-
-`values` returns all the enum values
+### values
+Return all the enum values
 
 ```ruby
 User::Role.values == [0, 1, 2, 3]
 ```
 
----
-
-`labels` returns all the enum labels
+### labels
+Return all the enum labels
 
 ```ruby
 User::Role.labels == ['Admin', 'Editor', 'Author', 'User']
 ```
 
----
-
-`label_value_pairs` returns an array of pairs of the label and value for each
+### label_value_pairs
+Return an array of pairs of the label and value for each
 enum value. This is mainly a convenience method for something like the
 collection option for a select input in the
 [Formtastic](https://github.com/justinfrench/formtastic) or
-[ActiveAdmin (which uses Formtastic)](https://github.com/gregbell/active_admin)
-gems:
+[ActiveAdmin](https://github.com/gregbell/active_admin) (which uses Formtastic)
+gems, so you can easily generate select options:
 
 ```ruby
-User::Role.label_value_pairs == [['Admin', 0], ['Editor', 1], ['Author', 2], ['User', 3]]
+User::Role.label_value_pairs == [
+  ['Admin', 0], ['Editor', 1], ['Author', 2], ['User', 3]
+]
+
+# In an ActiveAdmin form
+ActiveAdmin.register User do
+  form do |f|
+    f.inputs 'User Details' do
+      f.input :first_name
+      f.input :last_name
+      f.input :email
+
+      # Example usage of `label_value_pairs`
+      f.input :role, as: :select, collection: User::Role.label_value_pairs
+    end
+  end
+end
 ```
 
----
-
+### to_h and to_json
 `to_h` and `to_json` return a hash and a json string representation of the enum,
 respectively. They both offer an `only` and an `except` option to specify if
 you only want the value or maybe only the label and key or if you want
@@ -194,5 +217,5 @@ User::Role.to_json(except: :value) ==
   "{\"ADMIN\":{\"key\":\"admin\",\"label\":\"Admin\"},\"EDITOR\":{\"key\":\"editor\",\"label\":\"Editor\"},\"AUTHOR\":{\"key\":\"author\",\"label\":\"Author\"},\"USER\":{\"key\":\"user\",\"label\":\"User\"}}"
 ```
 
-### Feedback and Pull Requests Welcome
+## Feedback and Pull Requests Welcome
 This is my first real Rails gem, so I welcome all feedback and ideas. I hope this gem is as helpful to you as it has been to me in my own projects.
