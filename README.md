@@ -45,14 +45,14 @@ A couple helpers methods are added to the model and the enum attribute.
 Get the "display" label for the current value with the `display_*` method:
 
 ```ruby
-user = User.new(User::Role::ADMIN)
+user = User.new(role: User::Role::ADMIN)
 user.display_role == 'Admin'
 ```
 
 You can check for a specific value with a query `*?` method:
 
 ```ruby
-user = User.new(User::Role::AUTHOR)
+user = User.new(role: User::Role::AUTHOR)
 user.role.admin?  # false
 user.role.editor? # false
 user.role.author? # true
@@ -73,7 +73,7 @@ alt_label_map = {
   User::Role::USER   => 'A user'
 }
 
-user = User.new(User::Role::EDITOR)
+user = User.new(role: User::Role::EDITOR)
 alt_label = alt_label_map[user.role]
 alt_label == nil # not 'An editor'
 ```
@@ -90,7 +90,7 @@ Thus, the `.value` method on the attribute gives the actual `Fixnum` value.
 There is also a `.key` method which gives the symbol key:
 
 ```ruby
-user = User.new(User::Role::ADMIN)
+user = User.new(role: User::Role::ADMIN)
 user.role.key == :admin
 ```
 
