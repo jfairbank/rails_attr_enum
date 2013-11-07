@@ -13,8 +13,11 @@ gemspec
 # To use debugger
 # gem 'debugger'
 
-group :test do
+group :test, :development do
   gem 'rspec-rails', '~> 2.0'
+end
+
+group :test do
   gem 'factory_girl_rails'
   gem 'database_cleaner'
 end
