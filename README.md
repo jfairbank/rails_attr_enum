@@ -185,6 +185,15 @@ ActiveAdmin.register User do
 end
 ```
 
+You can also filter the results by passing in enum value keys as symbol
+arguments:
+
+```ruby
+User::Role.label_value_pairs(:admin, :author) == [
+  ['Admin', 0], ['Author', 2]
+]
+```
+
 ### to_h and to_json
 `to_h` and `to_json` return a hash and a json string representation of the enum,
 respectively. They both offer an `only` and an `except` option to specify if
