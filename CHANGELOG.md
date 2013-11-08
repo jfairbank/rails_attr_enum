@@ -1,3 +1,7 @@
+### v0.1.1
+* Added support for filtering results from `Enum.label_value_pairs` by
+  passinging in enum value keys as symbol arguments.
+
 ### v0.1.0
 * Added Rails scope helpers for searching on enum values. For a given
   model `User` with an enum attribute of `role` with keys `admin`,
