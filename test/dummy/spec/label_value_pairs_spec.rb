@@ -1,4 +1,4 @@
-require 'spec_Helper'
+require 'spec_helper'
 
 describe 'User::Role.label_value_pairs' do
   let(:enum) { User::Role }
