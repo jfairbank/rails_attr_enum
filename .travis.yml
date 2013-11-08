@@ -4,4 +4,6 @@ rvm:
   - 1.9.3
   - 2.0.0
 
-script: bundle exec rake spec
+script:
+  - cd ./test/dummy
+  - bundle exec rake spec
