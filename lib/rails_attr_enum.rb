@@ -33,7 +33,8 @@ module RailsAttrEnum
     @_attr_enums ||= {}
 
     if table_exists? && !column_names.include?(attr.name)
-      raise "Invalid attribute name #{attr.name}"
+      puts "Warning: Cannot create enum for '#{attr.name}' because that attribute does not exist for '#{self.name}'"
+      return
     end
 
     if @_attr_enums.any? { |(_, enm)| enm.attr_name == attr.name }
