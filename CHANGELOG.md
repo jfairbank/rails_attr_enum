@@ -1,3 +1,8 @@
+### v0.2.0
+* No longer raise an error when `attr_enum` is called on an attribute
+  that does not exist. Instead, a warning is sent via `puts` and the
+  enum is not set up.
+
 ### v0.1.1
 * Added support for filtering results from `Enum.label_value_pairs` by
   passinging in enum value keys as symbol arguments.
