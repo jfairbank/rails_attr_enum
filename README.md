@@ -110,10 +110,10 @@ user.display_role == 'Author'
 Convenient scopes are created for each possible enum value on the model class:
 
 ```ruby
-User.scope_admin  == User.where(role: User::Role::ADMIN)
-User.scope_editor == User.where(role: User::Role::EDITOR)
-User.scope_author == User.where(role: User::Role::AUTHOR)
-User.scope_user   == User.where(role: User::Role::USER)
+User.role_admin  == User.where(role: User::Role::ADMIN)
+User.role_editor == User.where(role: User::Role::EDITOR)
+User.role_author == User.where(role: User::Role::AUTHOR)
+User.role_user   == User.where(role: User::Role::USER)
 ```
 
 ## Enum Helper Methods
