@@ -11,14 +11,10 @@ module RailsAttrEnum
     if block_given?
       add_attr_enum_through_block(attr_name, &block)
     else
-      if keys.first.is_a?(Hash) && keys.first.size > 1
-        add_attr_enum_through_block(attr_name) do
-          keys.first.each { |k, v| add k => v }
-        end
-      else
-        add_attr_enum_through_block(attr_name) do
-          keys.each { |k| add k }
-        end
+      case (first_obj = keys.first)
+      when Hash  then add_attr_enum_from_hash(attr_name, first_obj)
+      when Array then add_attr_enum_from_array(attr_name, first_obj)
+      else            add_attr_enum_from_array(attr_name, keys)
       end
     end
 
@@ -26,6 +22,18 @@ module RailsAttrEnum
   end
 
   private
+
+  def add_attr_enum_from_hash(attr_name, hash)
+    add_attr_enum_through_block(attr_name) do
+      hash.each { |k, v| add k => v }
+    end
+  end
+
+  def add_attr_enum_from_array(attr_name, array)
+    add_attr_enum_through_block(attr_name) do
+      array.each { |k| add k }
+    end
+  end
 
   def add_attr_enum(attr_name, entries, validation_rules)
     attr = Attr.new(attr_name)
