@@ -3,7 +3,7 @@ require 'ostruct'
 module RailsAttrEnum
   ## Forwarding class for actual attribute value
   EntryValue = Struct.new(:model, :attr_name, :enum) do
-    delegate :==, :===, :inspect, :to_json, :as_json, to: :value
+    delegate :==, :eql?, :===, :hash, :inspect, :to_json, :as_json, to: :value
 
     def method_missing(name, *args, &block)
       default = proc { value.send(name, *args, &block) }
