@@ -63,6 +63,17 @@ describe User do
     it_behaves_like 'it sets default labels'
   end
 
+  context 'when passing an array' do
+    before :each do
+      clear_user
+
+      User.class_eval do
+        extend RailsAttrEnum
+        attr_enum :role, [:admin, :editor, :author, :user]
+      end
+    end
+  end
+
   context 'when specifying values' do
     context 'with a mix of symbols and hashes and a symbol is first' do
       before :each do
