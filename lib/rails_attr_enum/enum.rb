@@ -1,90 +1,63 @@
-require 'json'
-
 module RailsAttrEnum
-
-  ## Enum representation
   module Enum
     def self.included(base)
-      base.extend ClassMethods
+      base.extend(ClassMethods)
+      base.instance_variable_set(:@_enum_members, {})
     end
 
     module ClassMethods
-      def init_enum(attr_name)
-        return if @init
-        @attr_name = attr_name
-        @entries = []
-        @init = true
+      def value(key)
+        get(key).value
+      end
+      alias_method :[], :value
+
+      def label(key)
+        get(key).label
       end
 
-      def add(entry)
-        const_name = entry[:key].to_s.upcase
-        const_set(const_name, entry[:value])
-        const_set("#{const_name}_LABEL", entry[:label])
-        @entries << entry
+      def get_label(value)
+        get_by_value(value).label
+      end
+
+      def get_key(value)
+        get_by_value(value).key
+      end
+
+      def keys
+        mapped(:key)
+      end
+
+      def values
+        mapped(:value)
+      end
+
+      def labels
+        mapped(:label)
       end
 
       def label_value_pairs(*keys)
         if keys.empty?
-          labels.zip(values)
+          each_member.map { |member| [member.label, member.value] }
         else
-          @entries.reduce([]) do |arr, entry|
-            arr << [entry.label, entry.value] if keys.include?(entry.key)
-            arr
+          keys.reduce([]) do |array, key|
+            member = get(key)
+            array << [member.label, member.value]
           end
         end
       end
-
-      def get_label(value)
-        get_from_entries(:label, value)
-      end
-
-      def get_key(value)
-        get_from_entries(:key, value)
-      end
-
-      def attr_name; @attr_name end
-      def keys;   mapped(:key) end
-      def values; mapped(:value) end
-      def labels; mapped(:label) end
 
       def to_h(options = {})
-        default_to_include = [:key, :value, :label]
+        options = options.dup
 
-        [:only, :except].each do |key|
-          if options.include?(key)
-            if options[key].is_a?(Symbol)
-              options[key] = [options[key]]
-            elsif options[key].empty?
-              options[key] = nil
-            end
-
-            unless options[key].nil? || (options[key] - default_to_include).empty?
-              raise 'Unknown keys for enum'
-            end
-          end
+        build_key = if options.delete(:use_constant_keys)
+          proc { |member| member.key.to_s.camelize }
+        else
+          proc { |member| member.key }
         end
 
-        to_include =
-          if !options[:only].nil?
-            default_to_include & options[:only]
-          elsif !options[:except].nil?
-            default_to_include - options[:except]
-          else
-            default_to_include
-          end
-
-        builder =
-          if to_include.size == 1
-            to_include = to_include.first
-            proc { |entry| [entry.const_name, entry.send(to_include)]}
-          else
-            proc do |entry|
-              value = Hash[entry.to_h.select { |(key, _)| to_include.include?(key) }]
-              [entry.const_name, value]
-            end
-          end
-
-        Hash[@entries.map(&builder)]
+        Hash[each_member.map do |member|
+          [build_key.call(member), member.serialized_value(options)]
+        end]
       end
 
       def to_json(options = {})
@@ -93,14 +66,27 @@ module RailsAttrEnum
 
       private
 
-      def get_from_entries(key, value)
-        @entries.find { |hash| hash[:value] == value }.try(:[], key)
+      def get(key)
+        @_enum_members[key]
       end
 
-      def mapped(key)
-        @entries.map { |hash| hash[key] }
+      def get_by_value(value)
+        (@_enum_members_by_value ||= Hash[each_member.map do |member|
+          [member.value, member]
+        end])[value]
+      end
+
+      def each_member
+        if block_given?
+          @_enum_members.each { |_, member| yield member }
+        else
+          to_enum(:each_member)
+        end
+      end
+
+      def mapped(field)
+        each_member.map { |member| member.send(field) }
       end
     end
   end
-
 end
