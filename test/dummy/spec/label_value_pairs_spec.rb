@@ -6,10 +6,10 @@ describe 'User::Role.label_value_pairs' do
   before { default_user_roles }
 
   let :all_pairs do
-    [[enum::ADMIN_LABEL,  enum::ADMIN],
-     [enum::EDITOR_LABEL, enum::EDITOR],
-     [enum::AUTHOR_LABEL, enum::AUTHOR],
-     [enum::USER_LABEL,   enum::USER]]
+    [[enum::ADMIN_LABEL,      enum::ADMIN],
+     [enum::EDITOR_LABEL,     enum::EDITOR],
+     [enum::AUTHOR_LABEL,     enum::AUTHOR],
+     [enum::SUBSCRIBER_LABEL, enum::SUBSCRIBER]]
   end
 
   context 'with no arguments' do
@@ -32,9 +32,9 @@ describe 'User::Role.label_value_pairs' do
     it { should have(3).items }
 
     it {
-      should eq [[enum::ADMIN_LABEL,  enum::ADMIN],
+      should eq [[enum::AUTHOR_LABEL, enum::AUTHOR],
                  [enum::EDITOR_LABEL, enum::EDITOR],
-                 [enum::AUTHOR_LABEL, enum::AUTHOR]]
+                 [enum::ADMIN_LABEL,  enum::ADMIN]]
     }
   end
 end

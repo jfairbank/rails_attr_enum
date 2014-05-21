@@ -16,18 +16,17 @@ describe 'Role enum for User' do
                User.create(role: User::Role::ADMIN)
     2.times  { User.create(role: User::Role::EDITOR) }
     5.times  { User.create(role: User::Role::AUTHOR) }
-    20.times { User.create(role: User::Role::USER)   }
+    20.times { User.create(role: User::Role::SUBSCRIBER)   }
   end
 
   it 'adds the scope methods for each possible enum value' do
-    scopes = [:role_admin, :role_editor, :role_admin, :role_user]
-    expect(User).to respond_to(*scopes)
+    expect(User).to respond_to(:role)
   end
 
   it 'returns the correct count from the db' do
-    expect(User.role_admin.count).to  eq(1)
-    expect(User.role_editor.count).to eq(2)
-    expect(User.role_author.count).to eq(5)
-    expect(User.role_user.count).to   eq(20)
+    expect(User.role(:admin)).to      have(1).items
+    expect(User.role(:editor)).to     have(2).items
+    expect(User.role(:author)).to     have(5).items
+    expect(User.role(:subscriber)).to have(20).items
   end
 end

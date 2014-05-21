@@ -5,31 +5,62 @@ describe 'User::Role.to_h' do
 
   before { default_user_roles }
 
+  #let :only_value do
+    #{
+      #'ADMIN'      => 0,
+      #'EDITOR'     => 1,
+      #'AUTHOR'     => 2,
+      #'SUBSCRIBER' => 3
+    #}
+  #end
+
+  #let :value_and_label do
+    #{
+      #'ADMIN'      => { value: 0, label: 'Admin'      },
+      #'EDITOR'     => { value: 1, label: 'Editor'     },
+      #'AUTHOR'     => { value: 2, label: 'Author'     },
+      #'SUBSCRIBER' => { value: 3, label: 'Subscriber' }
+    #}
+  #end
+
+  #let :all_keys do
+    #{
+      #'ADMIN'      => { key: :admin,      label: 'Admin',      value: 0 },
+      #'EDITOR'     => { key: :editor,     label: 'Editor',     value: 1 },
+      #'AUTHOR'     => { key: :author,     label: 'Author',     value: 2 },
+      #'SUBSCRIBER' => { key: :subscriber, label: 'Subscriber', value: 3 }
+    #}
+  #end
+
   let :only_value do
     {
-      'ADMIN'  => 0,
-      'EDITOR' => 1,
-      'AUTHOR' => 2,
-      'USER'   => 3
+      admin:      0,
+      editor:     1,
+      author:     2,
+      subscriber: 3
     }
   end
 
   let :value_and_label do
     {
-      'ADMIN'  => { value: 0, label: 'Admin' },
-      'EDITOR' => { value: 1, label: 'Editor' },
-      'AUTHOR' => { value: 2, label: 'Author' },
-      'USER'   => { value: 3, label: 'User' }
+      admin:      { value: 0, label: 'Admin'      },
+      editor:     { value: 1, label: 'Editor'     },
+      author:     { value: 2, label: 'Author'     },
+      subscriber: { value: 3, label: 'Subscriber' }
     }
   end
 
   let :all_keys do
     {
-      'ADMIN'  => { key: :admin,  label: 'Admin',  value: 0 },
-      'EDITOR' => { key: :editor, label: 'Editor', value: 1 },
-      'AUTHOR' => { key: :author, label: 'Author', value: 2 },
-      'USER'   => { key: :user,   label: 'User',   value: 3}
+      admin:      { key: :admin,      label: 'Admin',      value: 0 },
+      editor:     { key: :editor,     label: 'Editor',     value: 1 },
+      author:     { key: :author,     label: 'Author',     value: 2 },
+      subscriber: { key: :subscriber, label: 'Subscriber', value: 3 }
     }
+  end
+
+  let :empty_hashes do
+    { admin: {}, editor: {}, author: {}, subscriber: {} }
   end
 
   context 'without options' do
@@ -45,7 +76,7 @@ describe 'User::Role.to_h' do
   context 'with option `only` as an array' do
     context 'with no elements' do
       subject { enum.to_h(only: []) }
-      it { should eq all_keys }
+      it { should eq empty_hashes }
     end
 
     context 'with one element' do
@@ -59,8 +90,12 @@ describe 'User::Role.to_h' do
     end
 
     context 'with an unknown key' do
-      it 'should raise an error' do
-        expect { enum.to_h(only: :foo) }.to raise_error('Unknown keys for enum')
+      #it 'should raise an error' do
+        #expect { enum.to_h(only: :foo) }.to raise_error('Unknown keys for enum')
+      #end
+
+      it 'returns empty hashes' do
+        expect(enum.to_h(only: :foo)).to eq(empty_hashes)
       end
     end
   end
@@ -87,9 +122,13 @@ describe 'User::Role.to_h' do
     end
 
     context 'with an unknown key' do
-      it 'should raise an error' do
-        expect { enum.to_h(except: :foo) }.to raise_error('Unknown keys for enum')
-      end
+      #it 'should raise an error' do
+        #expect { enum.to_h(except: :foo) }.to raise_error('Unknown keys for enum')
+      #end
+
+      it 'returns an empty hash' do
+        expect(enum.to_h(except: :foo)).to eq(all_keys)
+      end 
     end
   end
 end

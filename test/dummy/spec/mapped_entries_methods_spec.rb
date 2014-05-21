@@ -6,7 +6,7 @@ describe 'User::Role' do
 
     describe '.keys' do
       it 'returns all the keys' do
-        expect(enum.keys).to eq [:admin, :editor, :author, :user]
+        expect(enum.keys).to eq [:admin, :editor, :author, :subscriber]
       end
     end
 
@@ -18,7 +18,7 @@ describe 'User::Role' do
 
     describe '.labels' do
       it 'returns all the labels' do
-        expect(enum.labels).to eq %w(Admin Editor Author User)
+        expect(enum.labels).to eq %w(Admin Editor Author Subscriber)
       end
     end
   end
