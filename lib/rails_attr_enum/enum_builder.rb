@@ -97,6 +97,11 @@ module RailsAttrEnum
           self.class::#{@attribute_const_name}.get_label(#{@attribute})
         end
 
+        # Get the key of the value
+        def #{@attribute}_key
+          self.class::#{@attribute_const_name}.get_key(#{@attribute})
+        end
+
         # Add method like 'status?' for @attribute 'status' (overwrites rails method)
         #def #{@attribute}_with_value_check?(key = nil)
         def #{@attribute}?(key = nil)
