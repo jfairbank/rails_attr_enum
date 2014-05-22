@@ -57,7 +57,7 @@ module RailsAttrEnum
     end
 
     def add_validations
-      @klass.validates(@attribute, inclusion: { in: @enum.values })
+      @klass.validates(@attribute, inclusion: { in: @enum.values }, allow_nil: true)
     end
 
     def member_from_key(key)
